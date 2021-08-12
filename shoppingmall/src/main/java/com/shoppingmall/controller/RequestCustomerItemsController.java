@@ -1,5 +1,6 @@
 package com.shoppingmall.controller;
 
+import com.shoppingmall.exception.BadException;
 import com.shoppingmall.model.RequestCustomerItems;
 import com.shoppingmall.model.ResponseCustomerItems;
 import com.shoppingmall.service.RequestAndResponseService;
@@ -17,8 +18,7 @@ public class RequestCustomerItemsController
     private RequestAndResponseService requestAndResponseService;
 
     @PostMapping("/customeritemsrequest")
-    public ResponseCustomerItems AddCustomerItemsList(@RequestBody final RequestCustomerItems requestCustomerItems)
-    {
+    public ResponseCustomerItems AddCustomerItemsList(@RequestBody final RequestCustomerItems requestCustomerItems) throws BadException {
         return requestAndResponseService.AddCustomerItemsList(requestCustomerItems);
     }
 }

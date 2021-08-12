@@ -15,4 +15,6 @@ public class ItemsResponse
     private Integer unitPrice;
     private Integer discountValue;
     private Integer noOfUnits;
+    private String itemType;
+    private Integer offerId;
 }

@@ -15,4 +15,5 @@ public class Items
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer itemId;
     private Integer unitPrice;
+    private Integer offerId;
 }

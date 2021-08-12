@@ -1,5 +1,6 @@
 package com.shoppingmall.service;
 
+import com.shoppingmall.exception.BadException;
 import com.shoppingmall.model.*;
 import com.shoppingmall.repository.CustomerRepository;
 import com.shoppingmall.repository.ItemsRepository;
@@ -23,7 +24,7 @@ public class RequestAndResponseService {
     private OffersRepository offersRepository;
 
 
-    public ResponseCustomerItems AddCustomerItemsList(RequestCustomerItems requestCustomerItems) {
+    public ResponseCustomerItems AddCustomerItemsList(RequestCustomerItems requestCustomerItems) throws BadException {
         ResponseCustomerItems responseCustomerItems = new ResponseCustomerItems();
         final Optional<Customer> customerbyId = customerRepository.findById(requestCustomerItems.getCustomerID());
 
@@ -31,78 +32,97 @@ public class RequestAndResponseService {
                 .map(itemId -> itemsRepository.findById(itemId))
                 .collect(Collectors.toList());
 
-        final List<Optional<Offers>> offerList = requestCustomerItems.getOfferId().stream()
-                .map(offerId -> offersRepository.findById(offerId))
-                .collect(Collectors.toList());
-
-        if (customerbyId.isPresent())
-        {
+        if (customerbyId.isPresent()) {
             responseCustomerItems.setCustomerId(requestCustomerItems.getCustomerID());
             responseCustomerItems.setCustomerName(customerbyId.get().getCustomerName());
 
             HashMap<String, List<ItemsResponse>> offertype = new HashMap();
             List<ItemsResponse> freeItems = new ArrayList<>();
-            List<ItemsResponse> dollerItem = new ArrayList<>();
+            List<ItemsResponse> dollerItems = new ArrayList<>();
 
             for (int i = 0; i < itemsList.size(); i++)
             {
+                System.out.println(itemsList.size());
                 Optional<Items> item = itemsList.get(i);
-                Optional<Offers> offers = offerList.get(i);
-                ItemsResponse itemsResponse = ItemsResponse.builder()
-                        .itemId(item.get().getItemId())
-                        .unitPrice(item.get().getUnitPrice())
-                        .build();
-                if (offers.get().getOfferId() == 1)
-                {
+                Optional<Offers> offers = offersRepository.findById(item.get().getOfferId());
+                ItemsResponse itemsResponse = new ItemsResponse();
+
+                if (offers.get().getOfferType().equals("free-offer")) {
+                    itemsResponse.setItemId(item.get().getItemId());
+                    itemsResponse.setUnitPrice(item.get().getUnitPrice());
+                    itemsResponse.setItemType(offers.get().getOfferType());
                     itemsResponse.setDiscountValue(offers.get().getDiscountValue());
+                    itemsResponse.setOfferId(item.get().getOfferId());
+                    itemsResponse.setNoOfUnits(1);
                     freeItems.add(itemsResponse);
-                }
-                else
-                {
+                } else {
+                    itemsResponse.setItemId(item.get().getItemId());
+                    itemsResponse.setUnitPrice(item.get().getUnitPrice());
+                    itemsResponse.setItemType(offers.get().getOfferType());
                     itemsResponse.setDiscountValue(offers.get().getDiscountValue());
-                    dollerItem.add(itemsResponse);
+                    itemsResponse.setOfferId(item.get().getOfferId());
+                    itemsResponse.setNoOfUnits(1);
+                    dollerItems.add(itemsResponse);
                 }
             }
-            final Map<Integer, List<ItemsResponse>> freeItemsMap = freeItems.stream().collect(Collectors.groupingBy(ItemsResponse::getItemId));
-            final Map<Integer, List<ItemsResponse>> dollerItemsMap = dollerItem.stream().collect(Collectors.groupingBy(ItemsResponse::getItemId));
-            List<ItemsResponse> finalFree = new ArrayList<>();
-            List<ItemsResponse> finalDoller = new ArrayList<>();
-            AtomicInteger totalPrice = new AtomicInteger(0);
-            System.out.println("free-map"+freeItemsMap.toString());
-            System.out.println("Doller-off"+dollerItemsMap.toString());
-            freeItemsMap.forEach((id, list) ->
-            {
-                ItemsResponse itemsResponse = new ItemsResponse();
-                itemsResponse.setItemId(list.get(0).getItemId());
-                itemsResponse.setUnitPrice(list.get(0).getUnitPrice());
-                itemsResponse.setDiscountValue(list.get(0).getDiscountValue());
-                itemsResponse.setNoOfUnits(list.size());
-                totalPrice.addAndGet(itemsResponse.getUnitPrice() * (itemsResponse.getNoOfUnits() / 2));
-                totalPrice.addAndGet(itemsResponse.getUnitPrice() * (itemsResponse.getNoOfUnits() % 2));
-                finalFree.add(itemsResponse);
-            });
-            dollerItemsMap.forEach((id,list) ->
-            {
-                ItemsResponse itemsResponse = new ItemsResponse();
-                itemsResponse.setItemId(list.get(0).getItemId());
-                itemsResponse.setUnitPrice(list.get(0).getUnitPrice());
-                itemsResponse.setDiscountValue(list.get(0).getDiscountValue());
-                itemsResponse.setNoOfUnits(list.size());
-                totalPrice.addAndGet((itemsResponse.getNoOfUnits()/2)*(itemsResponse.getUnitPrice()*2)
-                        -((itemsResponse.getNoOfUnits()/2)*itemsResponse.getDiscountValue()));
-                totalPrice.addAndGet((itemsResponse.getNoOfUnits()%2)*itemsResponse.getUnitPrice());
-                finalDoller.add(itemsResponse);
+            final List<ItemsResponse> sortedFreeOffferList = freeItems.stream().
+                    sorted(Comparator.comparing(item -> item.getUnitPrice())).collect(Collectors.toList());
 
-            });
+            final List<ItemsResponse> sortedDollerItems = dollerItems.stream().
+                    sorted(Comparator.comparing(item -> item.getUnitPrice())).collect(Collectors.toList());
 
-            offertype.put("Free-offer", finalFree);
-            offertype.put("Doller-off", finalDoller);
+            Integer freeofferprice=0;
+            int freeTotal = sortedFreeOffferList.stream().map(ItemsResponse::getUnitPrice).reduce((s1,s2) -> s1+s2).get();
+
+            System.out.println("freetotal->"+freeTotal);
+            int freeOfferSize=0;
+            if(sortedFreeOffferList.size()%2==0)
+            {
+                freeOfferSize=sortedFreeOffferList.size();
+            }
+            else
+            {
+                freeOfferSize=sortedFreeOffferList.size()-1;
+            }
+            for (int i = 0; i <freeOfferSize; i=i+2)
+            {
+                freeofferprice=freeofferprice+sortedFreeOffferList.get(i).getUnitPrice();
+            }
+            System.out.println("freeofferprice-->"+freeofferprice);
+            int  totalfreeofferprice = freeTotal - freeofferprice;
+            System.out.println("totalfreeofferprice"+totalfreeofferprice);
+
+            int dolleroffSize=0;
+            if(sortedDollerItems.size()%2==0)
+            {
+                dolleroffSize=sortedDollerItems.size();
+            }
+            else
+            {
+                dolleroffSize=sortedDollerItems.size()-1;
+            }
+
+            int dollerTotal = sortedDollerItems.stream().map(ItemsResponse::getUnitPrice).reduce((s1,s2)->s1+s2).get();
+
+            System.out.println("price-->"+dollerTotal);
+            Integer dollerofferprice=0;
+            for (int i = 0; i < dolleroffSize; i=i+2)
+            {
+                dollerofferprice=dollerofferprice+sortedDollerItems.get(i).getDiscountValue();
+            }
+            dollerofferprice = dollerTotal - dollerofferprice;
+            offertype.put("free-offer", sortedFreeOffferList);
+            offertype.put("doller-off", sortedDollerItems);
             responseCustomerItems.setOffertype(offertype);
-            responseCustomerItems.setTotalPrice(totalPrice.get());
+            responseCustomerItems.setFreeItemsPrice(totalfreeofferprice);
+            responseCustomerItems.setDollerItemsPrice(dollerofferprice);
+            int totalprice = totalfreeofferprice+dollerofferprice;
+            responseCustomerItems.setTotalPrice(totalprice);
 
+            return responseCustomerItems;
         } else {
-            System.out.println("custmer is not found!!!!!");
+            throw new BadException("custmer is not found!!!!!");
         }
-        return responseCustomerItems;
     }
+
 }
