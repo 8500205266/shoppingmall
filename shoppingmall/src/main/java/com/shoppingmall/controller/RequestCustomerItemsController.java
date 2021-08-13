@@ -18,7 +18,8 @@ public class RequestCustomerItemsController
     private RequestAndResponseService requestAndResponseService;
 
     @PostMapping("/customeritemsrequest")
-    public ResponseCustomerItems AddCustomerItemsList(@RequestBody final RequestCustomerItems requestCustomerItems) throws BadException {
+    public ResponseCustomerItems AddCustomerItemsList(@RequestBody final RequestCustomerItems requestCustomerItems) throws BadException
+    {
         return requestAndResponseService.AddCustomerItemsList(requestCustomerItems);
     }
 }

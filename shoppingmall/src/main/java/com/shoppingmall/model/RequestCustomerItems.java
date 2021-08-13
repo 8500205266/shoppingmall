@@ -14,5 +14,4 @@ public class RequestCustomerItems
 {
     private Integer customerID;
     private List<Integer> itemId;
-    //private List<Integer> offerId;
 }
