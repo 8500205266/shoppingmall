@@ -1,6 +1,7 @@
 package com.shoppingmall.controller;
 
-import com.shoppingmall.exception.BadException;
+
+import com.shoppingmall.exception.CustomerNotFoundException;
 import com.shoppingmall.model.RequestCustomerItems;
 import com.shoppingmall.model.ResponseCustomerItems;
 import com.shoppingmall.service.RequestAndResponseService;
@@ -11,15 +12,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/request")
+@RequestMapping("/order")
 public class RequestCustomerItemsController
 {
     @Autowired
     private RequestAndResponseService requestAndResponseService;
 
-    @PostMapping("/customeritemsrequest")
-    public ResponseCustomerItems AddCustomerItemsList(@RequestBody final RequestCustomerItems requestCustomerItems) throws BadException
-    {
-        return requestAndResponseService.AddCustomerItemsList(requestCustomerItems);
-    }
+    /**
+     *
+     * @param requestCustomerItems
+     * @return
+     * @throws CustomerNotFoundException
+     */
+    @PostMapping
+    public ResponseCustomerItems addCustomerItemsList(@RequestBody final RequestCustomerItems requestCustomerItems)
+            throws  CustomerNotFoundException
+            {
+                return requestAndResponseService.placeOrder(requestCustomerItems);
+            }
+
 }

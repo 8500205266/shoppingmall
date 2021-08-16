@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ResponseObject {
     private String responseCode;
     private String statusCode;
-    private String ReponseStatus;
+    private String reponseStatus;
     @JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime timestamp;
     private String message;

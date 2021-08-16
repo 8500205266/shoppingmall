@@ -1,7 +1,7 @@
 package com.shoppingmall.service;
 
-import com.shoppingmall.exception.BadException;
-import com.shoppingmall.methods.Methods;
+import com.shoppingmall.exception.CustomerNotFoundException;
+import com.shoppingmall.utils.ItemUtil;
 import com.shoppingmall.model.*;
 import com.shoppingmall.repository.CustomerRepository;
 import com.shoppingmall.repository.ItemsRepository;
@@ -13,8 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class RequestAndResponseService
-{
+public class RequestAndResponseService {
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -25,76 +24,120 @@ public class RequestAndResponseService
     private OffersRepository offersRepository;
 
     @Autowired(required = true)
-    private Methods methods;
+    private ItemUtil itemUtil;
 
-    public ResponseCustomerItems AddCustomerItemsList(RequestCustomerItems requestCustomerItems)
-            throws BadException
-    {
+    public ResponseCustomerItems placeOrder(RequestCustomerItems requestCustomerItems)
+            throws CustomerNotFoundException {
         ResponseCustomerItems responseCustomerItems = new ResponseCustomerItems();
 
-        final Optional<Customer> customerbyId = customerRepository
-                .findById(requestCustomerItems.getCustomerID());
+        final Optional<Customer> customerbyId = getCustomerDetails(requestCustomerItems);
 
-        final List<Optional<Items>> itemsList = requestCustomerItems.getItemId().stream()
-                .map(itemId -> itemsRepository.findById(itemId))
-                .collect(Collectors.toList());
+        final List<Optional<Items>> itemsList = getItemDetails(requestCustomerItems);
 
-        if (customerbyId.isPresent())
-        {
+        if (customerbyId.isPresent()) {
             responseCustomerItems.setCustomerId(requestCustomerItems.getCustomerID());
             responseCustomerItems.setCustomerName(customerbyId.get().getCustomerName());
 
             List<ItemsResponse> freeItems = new ArrayList<>();
             List<ItemsResponse> dollerItems = new ArrayList<>();
 
-            for (int i = 0; i < itemsList.size(); i++)
-            {
-                Optional<Items> item = itemsList.get(i);
-                Optional<Offers> offers = offersRepository.findById(item.get().getOfferId());
-                ItemsResponse itemsResponse = new ItemsResponse();
+            itemsList.forEach(item -> extracteFreeAndDollerItems(freeItems, dollerItems, item));
 
-                if (offers.get().getOfferType().equals("free-offer"))
-                {
-                    ItemsResponse freeitemsResponse = methods.freeOfferMethod(itemsResponse,item,offers);
-                    freeItems.add(freeitemsResponse);
-                }
-                else
-                {
-                    ItemsResponse dolleritemsResponse = methods.dollerOffMethod(itemsResponse,item,offers);
-                    dollerItems.add(dolleritemsResponse);
-                }
-            }
-            final List<ItemsResponse> sortedFreeOffferList = freeItems.stream().
-                    sorted(Comparator.comparing(item -> item.getUnitPrice())).collect(Collectors.toList());
+            final List<ItemsResponse> sortedFreeOfferList = sortOnUnitPrice(freeItems);
 
-            final List<ItemsResponse> sortedDollerItems = dollerItems.stream().
-                    sorted(Comparator.comparing(item -> item.getUnitPrice())).collect(Collectors.toList());
+            final List<ItemsResponse> sortedDollarItems = sortOnUnitPrice(dollerItems);
 
-            final int totalfreeofferprice = methods.freeOfferItemsPrice(sortedFreeOffferList);
-            final int totaldollerofferprice=methods.dolllerOffPrrice(sortedDollerItems);
+            final int totalFreeOfferPrice = itemUtil.freeOfferItemsPrice(sortedFreeOfferList);
+            final int totalDollerOfferPrice = itemUtil.dolllerOffPrrice(sortedDollarItems);
 
-            final Map<Integer, List<ItemsResponse>> freeItemsMap = sortedFreeOffferList.stream().collect(Collectors.groupingBy(ItemsResponse::getItemId));
-            final Map<Integer, List<ItemsResponse>> dollerItemsMap = sortedDollerItems.stream().collect(Collectors.groupingBy(ItemsResponse::getItemId));
+            final Map<Integer, List<ItemsResponse>> freeItemsMap = groupByItemId(sortedFreeOfferList);
+            final Map<Integer, List<ItemsResponse>> dollerItemsMap = groupByItemId(sortedDollarItems);
             List<ItemsResponse> finalFreeOfferList = new ArrayList<>();
             List<ItemsResponse> finalDollerOffList = new ArrayList<>();
-            final List<ItemsResponse> finalFreeOfferItems = methods.finalFreeOfferList(freeItemsMap, finalFreeOfferList);
-            final List<ItemsResponse> finalDollerOffItems = methods.finalDollerOffList(dollerItemsMap, finalDollerOffList);
+
+            final List<ItemsResponse> finalFreeOfferItems = itemUtil.finalFreeOfferList(freeItemsMap, finalFreeOfferList);
+            final List<ItemsResponse> finalDollerOffItems = itemUtil.finalDollerOffList(dollerItemsMap, finalDollerOffList);
 
             HashMap<String, List<ItemsResponse>> offertype = new HashMap();
             offertype.put("free-offer", finalFreeOfferItems);
             offertype.put("doller-off", finalDollerOffItems);
-
             responseCustomerItems.setOffertype(offertype);
-            responseCustomerItems.setFreeItemsPrice(totalfreeofferprice);
-            responseCustomerItems.setDollerItemsPrice(totaldollerofferprice);
-            int totalprice = totalfreeofferprice+totaldollerofferprice;
-            responseCustomerItems.setTotalPrice(totalprice);
 
+            responseCustomerItems.setFreeItemsPrice(totalFreeOfferPrice);
+            responseCustomerItems.setDollerItemsPrice(totalDollerOfferPrice);
+            int totalprice = totalFreeOfferPrice + totalDollerOfferPrice;
+            responseCustomerItems.setTotalPrice(totalprice);
             return responseCustomerItems;
+        } else {
+            throw new CustomerNotFoundException("custmer is not found!!!!!");
         }
-        else
+    }
+
+    /**
+     *
+     * @param sortedFreeOfferList
+     * @return
+     */
+    private Map<Integer, List<ItemsResponse>> groupByItemId(List<ItemsResponse> sortedFreeOfferList)
+    {
+        return sortedFreeOfferList.stream().collect(Collectors.groupingBy(ItemsResponse::getItemId));
+    }
+
+    /**
+     *
+     * @param freeItems
+     * @return
+     */
+    private List<ItemsResponse> sortOnUnitPrice(List<ItemsResponse> freeItems) {
+        return freeItems.stream().
+                sorted(Comparator.comparing(ItemsResponse::getUnitPrice)).collect(Collectors.toList());
+    }
+
+    /**
+     *
+     * @param freeItems
+     * @param dollerItems
+     * @param item
+     */
+    private void extracteFreeAndDollerItems(List<ItemsResponse> freeItems, List<ItemsResponse> dollerItems, Optional<Items> item) {
+        Optional<Offers> offers = getOffer(item);
+        if (offers.get().getOfferType().equals("free-offer"))
         {
-                throw new BadException("custmer is not found!!!!!");
+            ItemsResponse freeitemsResponse = itemUtil.freeOfferMethod(item, offers);
+            freeItems.add(freeitemsResponse);
+        } else {
+            ItemsResponse dolleritemsResponse = itemUtil.dollerOffMethod(item, offers);
+            dollerItems.add(dolleritemsResponse);
         }
+    }
+
+    /**
+     *
+     * @param item
+     * @return
+     */
+    private Optional<Offers> getOffer(Optional<Items> item) {
+        return offersRepository.findById(item.get().getOfferId());
+    }
+
+    /**
+     *
+     * @param requestCustomerItems
+     * @return
+     */
+    private List<Optional<Items>> getItemDetails(RequestCustomerItems requestCustomerItems) {
+        return requestCustomerItems.getItemId().stream()
+                .map(itemId -> itemsRepository.findById(itemId))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     *
+     * @param requestCustomerItems
+     * @return
+     */
+    private Optional<Customer> getCustomerDetails(RequestCustomerItems requestCustomerItems) {
+        return customerRepository
+                .findById(requestCustomerItems.getCustomerID());
     }
 }

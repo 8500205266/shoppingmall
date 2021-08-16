@@ -1,13 +1,12 @@
 package com.shoppingmall.exception;
 
-
-public class CustomerNotFoundException extends Exception
+public class OfferNotFoundException extends Exception
 {
     /**
      *
      * @param message
      */
-    public CustomerNotFoundException(String message)
+    public  OfferNotFoundException(String message)
     {
         super(message);
     }

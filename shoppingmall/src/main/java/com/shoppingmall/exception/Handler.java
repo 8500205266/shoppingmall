@@ -11,17 +11,59 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class Handler extends RuntimeException
 {
-        @ExceptionHandler(BadException.class)
-    public ResponseEntity<ResponseObject> handle(BadException ex)
+
+    /**
+     *
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(CustomerNotFoundException.class)
+        public ResponseEntity<ResponseObject> handle(CustomerNotFoundException ex)
         {
             ResponseObject response = new ResponseObject();
-            response.setResponseCode("400");
-            response.setReponseStatus("Bad Request");
-            response.setStatus("It is Bad Request");
-            response.setStatusCode("422");
+            response.setResponseCode("404");
+            response.setReponseStatus("Customer Id  Not Found!!!");
+            response.setStatus("Customer Id  Not Found!!!");
+            response.setStatusCode("404");
             response.setTimestamp(LocalDateTime.now());
             response.setMessage(ex.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
+
+    /**
+     *
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<ResponseObject> handle(ItemNotFoundException ex)
+    {
+        ResponseObject response = new ResponseObject();
+        response.setResponseCode("404");
+        response.setReponseStatus("Item Id is Not Found!!!");
+        response.setStatus("Item Id is Not Found!!!");
+        response.setStatusCode("404");
+        response.setTimestamp(LocalDateTime.now());
+        response.setMessage(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     *
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(OfferNotFoundException.class)
+    public ResponseEntity<ResponseObject> handle(OfferNotFoundException ex)
+    {
+        ResponseObject response = new ResponseObject();
+        response.setResponseCode("404");
+        response.setReponseStatus("Offer Id  Not Found!!!");
+        response.setStatus("Offer Id  Not Found!!!");
+        response.setStatusCode("404");
+        response.setTimestamp(LocalDateTime.now());
+        response.setMessage(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 
 }

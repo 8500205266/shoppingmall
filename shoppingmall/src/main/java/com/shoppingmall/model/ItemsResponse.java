@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ItemsResponse
 {
+
     private Integer itemId;
     private Integer unitPrice;
     private Integer discountValue;
