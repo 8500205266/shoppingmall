@@ -26,7 +26,6 @@ import java.util.Optional;
     {
         final Optional<Customer> customerId = customerRepository.findById(1);
         Assert.assertEquals("Prashanth", customerId.get().getCustomerName());
-        Assert.assertFalse(customerId.get().getCustomerName() == "balu");
     }
 }
 

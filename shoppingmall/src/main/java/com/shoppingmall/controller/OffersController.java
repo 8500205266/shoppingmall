@@ -21,7 +21,7 @@ public class OffersController
     private String offerIdNotFound="Offer ID is Not Found!!!";
 
     /**
-     *
+     *it is used to return all offers
      * @return
      */
     @RequestMapping()
@@ -31,9 +31,9 @@ public class OffersController
     }
 
     /**
-     *
-     * @param offerDto
-     * @return
+     *it is use to save offer
+     * @param offerDto it will take offer
+     * @return it is used to return offer which was saved
      */
     @PostMapping()
     public Offers addOffers(@RequestBody OfferDto offerDto)
@@ -43,10 +43,10 @@ public class OffersController
     }
 
     /**
-     *
-     * @param id
-     * @return
-     * @throws OfferNotFoundException
+     *It is provides offer details when we pass offerId
+     * @param id we will pass offer id
+     * @return it is return the offers corresponding that offerId
+     * @throws OfferNotFoundException if offerid not there then it throws OfferNotFoundException
      */
     @GetMapping("/{id}")
     public Offers getofferById(@PathVariable("id") int id) throws OfferNotFoundException
@@ -56,9 +56,9 @@ public class OffersController
     }
 
     /**
-     *
-     * @param id
-     * @throws OfferNotFoundException
+     *It is used to delete offer when we pass offerId of offer
+     * @param id pass the offer id
+     * @throws OfferNotFoundException if id is not Found then it throws OfferNotFoundException
      */
     @DeleteMapping("/{id}")
     public void deleteOfferById(@PathVariable("id") int id) throws OfferNotFoundException
@@ -70,11 +70,11 @@ public class OffersController
 
 
     /**
-     *
-     * @param id
-     * @param offerDto
-     * @return
-     * @throws OfferNotFoundException
+     *It is used to update offer when we pass offerId of offer
+     * @param id pass the offer id
+     * @param offerDto we will pass offer
+     * @return it is return updated offer
+     * @throws OfferNotFoundException if offer not found then it throws custom OfferNotFoundException
      */
     @PutMapping("/{id}")
     public Offers updateData(@PathVariable("id") int id, @RequestBody OfferDto offerDto)

@@ -18,7 +18,7 @@ public class CustomerController
     String customernotfound="Customer ID is Not Found!!!";
     /**
      *
-     * @return
+     * @return it is returns all customers
      */
     @GetMapping()
     public List<Customer> getCustomer()
@@ -27,9 +27,9 @@ public class CustomerController
     }
 
     /**
-     *
+     *it is used to save the customer data
      * @param customerDto
-     * @return
+     * @return use to return customer
      */
     @PostMapping()
     public Customer saveCustomer(@RequestBody CustomerDto customerDto)
@@ -40,10 +40,10 @@ public class CustomerController
 
 
     /**
-     *
-     * @param id
-     * @return
-     * @throws CustomerNotFoundException
+     * It is provides customer details when we pass customerId
+     * @param id pass the customerId
+     * @return customer details
+     * @throws CustomerNotFoundException if id is not Found then it throws CustomerNotFoundException
      */
     @GetMapping("/{id}")
     public Customer getCustomerById(@PathVariable("id") int id) throws CustomerNotFoundException
@@ -52,9 +52,9 @@ public class CustomerController
                 CustomerNotFoundException(customernotfound));
     }
     /**
-     *
-     * @param id
-     * @throws CustomerNotFoundException
+     *It is used to delete customer when we pass customerId of customer
+     * @param id pass the customer id
+     * @throws CustomerNotFoundException if id is not Found then it throws CustomerNotFoundException
      */
     @DeleteMapping("/{id}")
     public void deleteCustomerById(@PathVariable("id") int id) throws CustomerNotFoundException
@@ -65,11 +65,11 @@ public class CustomerController
     }
 
     /**
-     *
-     * @param id
-     * @param customerDto
-     * @return
-     * @throws CustomerNotFoundException
+     *It is used to update customer when we pass customerId of customer
+     * @param id pass the customer id
+     * @param customerDto we will pass customer to customerDto
+     * @return it is return updated customer
+     * @throws CustomerNotFoundException if customer id not found then it returns CustomerNotFoundException
      */
     @PutMapping("/{id}")
     public Customer updateData(@PathVariable("id") int id, @RequestBody CustomerDto customerDto) throws CustomerNotFoundException

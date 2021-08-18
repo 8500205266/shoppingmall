@@ -19,10 +19,10 @@ public class RequestCustomerItemsController
     private RequestAndResponseService requestAndResponseService;
 
     /**
-     *
-     * @param requestCustomerItems
-     * @return
-     * @throws CustomerNotFoundException
+     *we will provide customer Id and items here
+     * @param requestCustomerItems it has customer id and list of items
+     * @return list of items with offer id and customer Id and total price of items
+     * @throws CustomerNotFoundException if customer id not found then it returns CustomerNotFoundException
      */
     @PostMapping
     public ResponseCustomerItems addCustomerItemsList(@RequestBody final RequestCustomerItems requestCustomerItems)

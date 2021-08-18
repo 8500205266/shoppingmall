@@ -6,9 +6,10 @@ import com.shoppingmall.model.*;
 import com.shoppingmall.repository.CustomerRepository;
 import com.shoppingmall.repository.ItemsRepository;
 import com.shoppingmall.repository.OffersRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,23 +27,43 @@ public class RequestAndResponseService {
     @Autowired(required = true)
     private ItemUtil itemUtil;
 
+    static final Logger log = LoggerFactory.getLogger(RequestAndResponseService.class);
+
     public ResponseCustomerItems placeOrder(RequestCustomerItems requestCustomerItems)
-            throws CustomerNotFoundException {
+            throws CustomerNotFoundException
+    {
         ResponseCustomerItems responseCustomerItems = new ResponseCustomerItems();
 
         final Optional<Customer> customerbyId = getCustomerDetails(requestCustomerItems);
 
         final List<Optional<Items>> itemsList = getItemDetails(requestCustomerItems);
 
-        if (customerbyId.isPresent()) {
+        if (customerbyId.isPresent())
+        {
             responseCustomerItems.setCustomerId(requestCustomerItems.getCustomerID());
             responseCustomerItems.setCustomerName(customerbyId.get().getCustomerName());
 
             List<ItemsResponse> freeItems = new ArrayList<>();
             List<ItemsResponse> dollerItems = new ArrayList<>();
+            itemsList.forEach(items ->
+            {
+                Optional<Offers> offers = offersRepository.findById(items.get().getOfferId());
 
-            itemsList.forEach(item -> extracteFreeAndDollerItems(freeItems, dollerItems, item));
-
+                if (offers.get().getOfferType().equals("free-offer"))
+                {
+                    ItemsResponse freeitemsResponse = itemUtil.freeOfferMethod(items,offers);
+                    freeItems.add(freeitemsResponse);
+                    log.debug("freeOffer Type Items-->"+freeItems);
+                    log.info("free offer Type Items---->"+freeItems);
+                }
+                else
+                {
+                    ItemsResponse dolleritemsResponse = itemUtil.dollerOffMethod(items,offers);
+                    dollerItems.add(dolleritemsResponse);
+                    log.debug("doller off Type Items-->"+dollerItems);
+                    log.info("doller off Type Items---->"+dollerItems);
+                }
+            });
             final List<ItemsResponse> sortedFreeOfferList = sortOnUnitPrice(freeItems);
 
             final List<ItemsResponse> sortedDollarItems = sortOnUnitPrice(dollerItems);
@@ -82,7 +103,6 @@ public class RequestAndResponseService {
     {
         return sortedFreeOfferList.stream().collect(Collectors.groupingBy(ItemsResponse::getItemId));
     }
-
     /**
      *
      * @param freeItems
@@ -91,24 +111,6 @@ public class RequestAndResponseService {
     private List<ItemsResponse> sortOnUnitPrice(List<ItemsResponse> freeItems) {
         return freeItems.stream().
                 sorted(Comparator.comparing(ItemsResponse::getUnitPrice)).collect(Collectors.toList());
-    }
-
-    /**
-     *
-     * @param freeItems
-     * @param dollerItems
-     * @param item
-     */
-    private void extracteFreeAndDollerItems(List<ItemsResponse> freeItems, List<ItemsResponse> dollerItems, Optional<Items> item) {
-        Optional<Offers> offers = getOffer(item);
-        if (offers.get().getOfferType().equals("free-offer"))
-        {
-            ItemsResponse freeitemsResponse = itemUtil.freeOfferMethod(item, offers);
-            freeItems.add(freeitemsResponse);
-        } else {
-            ItemsResponse dolleritemsResponse = itemUtil.dollerOffMethod(item, offers);
-            dollerItems.add(dolleritemsResponse);
-        }
     }
 
     /**

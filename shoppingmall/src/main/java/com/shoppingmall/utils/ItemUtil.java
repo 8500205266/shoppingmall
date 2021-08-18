@@ -1,16 +1,22 @@
 package com.shoppingmall.utils;
 
+import com.shoppingmall.exception.ItemNotFoundException;
 import com.shoppingmall.model.Items;
 import com.shoppingmall.model.ItemsResponse;
 import com.shoppingmall.model.Offers;
+import com.shoppingmall.service.RequestAndResponseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Component
 public class ItemUtil
 {
+    static final Logger log = LoggerFactory.getLogger(ItemUtil.class);
     /**
      *
      * @param item
@@ -19,16 +25,23 @@ public class ItemUtil
      */
     public ItemsResponse freeOfferMethod( Optional<Items> item , Optional<Offers> offers)
     {
-        ItemsResponse itemsResponse=new ItemsResponse();
-        itemsResponse.setItemId(item.get().getItemId());
-        itemsResponse.setUnitPrice(item.get().getUnitPrice());
-        itemsResponse.setItemType(offers.get().getOfferType());
-        itemsResponse.setDiscountValue(offers.get().getDiscountValue());
-        itemsResponse.setOfferId(item.get().getOfferId());
-        itemsResponse.setNoOfUnits(1);
-        return itemsResponse;
-    }
 
+            ItemsResponse itemsResponse = new ItemsResponse();
+            if(item.isPresent()&&offers.isPresent())
+            {
+                final Integer itemId = item.get().getItemId();
+                itemsResponse.setItemId(itemId);
+                itemsResponse.setUnitPrice(item.get().getUnitPrice());
+                itemsResponse.setItemType(offers.get().getOfferType());
+                itemsResponse.setDiscountValue(offers.get().getDiscountValue());
+                itemsResponse.setOfferId(item.get().getOfferId());
+                itemsResponse.setNoOfUnits(1);
+            }
+            String itemResponseString="item response-->";
+           // log.info(itemResponseString,itemsResponse);
+            log.debug("item response1111111-->"+itemsResponse);
+            return itemsResponse;
+    }
     /**
      *
      * @param item
@@ -37,16 +50,19 @@ public class ItemUtil
      */
     public ItemsResponse dollerOffMethod(Optional<Items> item , Optional<Offers> offers)
     {
-        ItemsResponse dollerOffItemsResponse=new ItemsResponse();
-        dollerOffItemsResponse.setItemId(item.get().getItemId());
-        dollerOffItemsResponse.setUnitPrice(item.get().getUnitPrice());
-        dollerOffItemsResponse.setItemType(offers.get().getOfferType());
-        dollerOffItemsResponse.setDiscountValue(offers.get().getDiscountValue());
-        dollerOffItemsResponse.setOfferId(item.get().getOfferId());
-        dollerOffItemsResponse.setNoOfUnits(1);
+        ItemsResponse dollerOffItemsResponse = new ItemsResponse();
+        if (item.isPresent() && offers.isPresent())
+        {
+
+            dollerOffItemsResponse.setItemId(item.get().getItemId());
+            dollerOffItemsResponse.setUnitPrice(item.get().getUnitPrice());
+            dollerOffItemsResponse.setItemType(offers.get().getOfferType());
+            dollerOffItemsResponse.setDiscountValue(offers.get().getDiscountValue());
+            dollerOffItemsResponse.setOfferId(item.get().getOfferId());
+            dollerOffItemsResponse.setNoOfUnits(1);
+        }
         return dollerOffItemsResponse;
     }
-
     /**
      *
      * @param sortedFreeOffferList
@@ -55,9 +71,9 @@ public class ItemUtil
     public int freeOfferItemsPrice( List<ItemsResponse> sortedFreeOffferList)
     {
         Integer freeofferprice=0;
-        int freeTotal = sortedFreeOffferList.stream().map(ItemsResponse::getUnitPrice).reduce((s1,s2) -> s1+s2).get();
-
-        System.out.println("freetotal->"+freeTotal);
+        final Integer freeTotal = sortedFreeOffferList.stream()
+                                  .map(ItemsResponse::getUnitPrice)
+                                  .reduce((s1, s2) -> s1 + s2).get();
 
         int freeOfferSize=0;
         if(sortedFreeOffferList.size()%2==0)
@@ -72,6 +88,7 @@ public class ItemUtil
         {
             freeofferprice=freeofferprice+sortedFreeOffferList.get(i).getUnitPrice();
         }
+        //IntStream
 
         int  totalfreeofferprice = freeTotal - freeofferprice;
 

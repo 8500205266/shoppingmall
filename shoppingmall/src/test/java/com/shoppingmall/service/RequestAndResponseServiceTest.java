@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
@@ -59,7 +60,8 @@ public class RequestAndResponseServiceTest {
 
         Assert.assertEquals("prashanth", responseCustomerItems.getCustomerName());
         Assert.assertEquals("10",responseCustomerItems.getFreeItemsPrice().toString());
+        Assert.assertEquals("35",responseCustomerItems.getDollerItemsPrice().toString());
         Assert.assertEquals("45",responseCustomerItems.getTotalPrice().toString());
-
+        //Assert.assertEquals("free-offer",responseCustomerItems.getOffertype().);
     }
 }
