@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Optional;
-
-
 @SpringBootTest
 class OfferTypeCheckingTest
 {
@@ -24,7 +22,7 @@ class OfferTypeCheckingTest
 
 
     @Test
-    void checkingFreeOfferTest()
+    void checkingFreeOfferTypeTest()
     {
         final Optional<Items> itmesById = itemsRepository.findById(1);
         final Optional<Offers> offerById = offersRepository.findById(1);
@@ -47,7 +45,6 @@ class OfferTypeCheckingTest
         Optional<Items> items= Optional.of(new Items(2, 20, 2));
         Offers offers=new Offers(2,"doller-off",15);
         final ItemsResponse expectedDollerOffMethod = itemUtil.dollerOffMethod( items, Optional.of(offers));
-
         Assert.assertEquals(expectedDollerOffMethod,actualDollerOffMethod);
     }
 }

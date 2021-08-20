@@ -14,16 +14,16 @@ public class Handler extends RuntimeException
 
     /**
      *
-     * @param ex
-     * @return
+     * @param ex this is the message from CustomerNotFoundException class
+     * @return it is returns the ResponseObject
      */
     @ExceptionHandler(CustomerNotFoundException.class)
         public ResponseEntity<ResponseObject> handle(CustomerNotFoundException ex)
         {
             ResponseObject response = new ResponseObject();
             response.setResponseCode("404");
-            response.setReponseStatus("Customer Id  Not Found!!!");
-            response.setStatus("Customer Id  Not Found!!!");
+            response.setReponseStatus(ex.getMessage());
+            response.setStatus(HttpStatus.NOT_FOUND.toString());
             response.setStatusCode("404");
             response.setTimestamp(LocalDateTime.now());
             response.setMessage(ex.getMessage());
@@ -32,8 +32,8 @@ public class Handler extends RuntimeException
 
     /**
      *
-     * @param ex
-     * @return
+     * @param ex ex this is the message from ItemNotFoundException class
+     * @return it is returns the ResponseObject
      */
     @ExceptionHandler(ItemNotFoundException.class)
     public ResponseEntity<ResponseObject> handle(ItemNotFoundException ex)
@@ -50,8 +50,8 @@ public class Handler extends RuntimeException
 
     /**
      *
-     * @param ex
-     * @return
+     * @param ex ex this is the message from OfferNotFoundException class
+     * @return it is returns the ResponseObject
      */
     @ExceptionHandler(OfferNotFoundException.class)
     public ResponseEntity<ResponseObject> handle(OfferNotFoundException ex)

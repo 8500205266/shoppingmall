@@ -12,6 +12,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+/*
+ * it has OfferId,offerType and discountValue variables
+ */
 public class Offers
 {
     @Id

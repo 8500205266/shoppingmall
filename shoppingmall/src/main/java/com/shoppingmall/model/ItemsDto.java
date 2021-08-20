@@ -2,6 +2,10 @@ package com.shoppingmall.model;
 
 import lombok.Data;
 
+
+/*
+ * it has ItemId,unitprice and offerId variables
+ */
 @Data
 public class ItemsDto
 {

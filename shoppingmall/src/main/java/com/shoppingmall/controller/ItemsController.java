@@ -1,23 +1,22 @@
 package com.shoppingmall.controller;
-
 import com.shoppingmall.exception.ItemNotFoundException;
+import com.shoppingmall.mapper.ShoppingMallMapper;
 import com.shoppingmall.model.Items;
 import com.shoppingmall.model.ItemsDto;
 import com.shoppingmall.service.ItemsService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 @RestController
 @RequestMapping("/items")
 public class ItemsController
 {
     @Autowired
     private ItemsService itemsService;
+
     @Autowired
-    private ModelMapper modelMapper;
+    private ShoppingMallMapper shoppingMallMapper;
+    private String itemNotFound="Item ID is Not Found!!!";
 
     /**
      *it is use to provide all items
@@ -37,8 +36,7 @@ public class ItemsController
     @PostMapping()
     public Items addItems(@RequestBody ItemsDto itemsDto)
     {
-        Items items=modelMapper.map(itemsDto,Items.class);
-        return itemsService.addItems(items);
+        return itemsService.addItems(shoppingMallMapper.toItems(itemsDto));
     }
 
     /**
@@ -51,7 +49,7 @@ public class ItemsController
     public Items getitemById(@PathVariable("id") int id) throws ItemNotFoundException
     {
         return itemsService.findItemById(id).orElseThrow(() -> new
-                ItemNotFoundException("Item ID is Not Found!!!"));
+                ItemNotFoundException(itemNotFound));
     }
 
     /**
@@ -63,7 +61,7 @@ public class ItemsController
     public void deleteItemById(@PathVariable("id") int id) throws ItemNotFoundException
     {
         final Items itemByID = itemsService.findItemById(id).orElseThrow(() -> new
-                ItemNotFoundException("Item ID is Not Found!!!"));
+                ItemNotFoundException(itemNotFound));
         itemsService.deleteItem(itemByID);
     }
 
@@ -75,10 +73,12 @@ public class ItemsController
      * @throws ItemNotFoundException if item not found then it throws custom ItemNotFoundException
      */
     @PutMapping("/{id}")
-    public Items updateData(@PathVariable("id") int id, @RequestBody ItemsDto itemsDto) throws ItemNotFoundException{
-        Items items=modelMapper.map(itemsDto,Items.class);
+    public Items updateData(@PathVariable("id") int id, @RequestBody ItemsDto itemsDto)
+            throws ItemNotFoundException
+    {
         final Items itemByID = itemsService.findItemById(id).orElseThrow(() -> new
-                ItemNotFoundException("Item ID is Not Found!!!"));
+                ItemNotFoundException(itemNotFound));
+        Items items=shoppingMallMapper.toItems(itemsDto);
         itemByID.setUnitPrice(items.getUnitPrice());
         itemByID.setOfferId(items.getOfferId());
         return itemsService.updateItem(itemByID);

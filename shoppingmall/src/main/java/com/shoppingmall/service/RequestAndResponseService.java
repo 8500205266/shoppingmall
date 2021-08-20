@@ -12,9 +12,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
-
 @Service
-public class RequestAndResponseService {
+/**
+ * this is service which was given reques as
+ * {
+ *     "customerID":1,
+ *     "itemId":[]
+ * }
+ * This is response
+ *     "customerName": "Prashanth",
+ *     "customerId": 1,
+ *     "offertype": {
+ *         "free-offer": [],
+ *         "doller-off": []}
+ *     "totalPrice": 285,
+ *     "freeItemsPrice": 160,
+ *     "dollerItemsPrice": 125
+ */
+public class RequestAndResponseService
+{
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -34,9 +50,12 @@ public class RequestAndResponseService {
     {
         ResponseCustomerItems responseCustomerItems = new ResponseCustomerItems();
 
-        final Optional<Customer> customerbyId = getCustomerDetails(requestCustomerItems);
+        final Optional<Customer> customerbyId = customerRepository
+                        .findById(requestCustomerItems.getCustomerID());
 
-        final List<Optional<Items>> itemsList = getItemDetails(requestCustomerItems);
+        final List<Optional<Items>> itemsList = requestCustomerItems.getItemId().stream()
+                .map(itemId -> itemsRepository.findById(itemId))
+                .collect(Collectors.toList());
 
         if (customerbyId.isPresent())
         {
@@ -53,15 +72,13 @@ public class RequestAndResponseService {
                 {
                     ItemsResponse freeitemsResponse = itemUtil.freeOfferMethod(items,offers);
                     freeItems.add(freeitemsResponse);
-                    log.debug("freeOffer Type Items-->"+freeItems);
-                    log.info("free offer Type Items---->"+freeItems);
+                    log.debug("freeOffer Type Items-->{}",freeItems);
                 }
                 else
                 {
                     ItemsResponse dolleritemsResponse = itemUtil.dollerOffMethod(items,offers);
                     dollerItems.add(dolleritemsResponse);
-                    log.debug("doller off Type Items-->"+dollerItems);
-                    log.info("doller off Type Items---->"+dollerItems);
+                    log.debug("doller off Type Items-->{}",dollerItems);
                 }
             });
             final List<ItemsResponse> sortedFreeOfferList = sortOnUnitPrice(freeItems);
@@ -79,7 +96,7 @@ public class RequestAndResponseService {
             final List<ItemsResponse> finalFreeOfferItems = itemUtil.finalFreeOfferList(freeItemsMap, finalFreeOfferList);
             final List<ItemsResponse> finalDollerOffItems = itemUtil.finalDollerOffList(dollerItemsMap, finalDollerOffList);
 
-            HashMap<String, List<ItemsResponse>> offertype = new HashMap();
+            HashMap<String, List<ItemsResponse>> offertype = new HashMap<String, List<ItemsResponse>>();
             offertype.put("free-offer", finalFreeOfferItems);
             offertype.put("doller-off", finalDollerOffItems);
             responseCustomerItems.setOffertype(offertype);
@@ -95,51 +112,28 @@ public class RequestAndResponseService {
     }
 
     /**
-     *
-     * @param sortedFreeOfferList
-     * @return
+     *this is used to group the sortedFreeOfferList by itemId
+     * @param sortedFreeOfferList which required sortedFreeOfferList
+     * @return  it is return map
      */
     private Map<Integer, List<ItemsResponse>> groupByItemId(List<ItemsResponse> sortedFreeOfferList)
     {
+        log.debug("sortedFreeOfferList-->{}",sortedFreeOfferList.stream().collect(Collectors.groupingBy(ItemsResponse::getItemId)));
         return sortedFreeOfferList.stream().collect(Collectors.groupingBy(ItemsResponse::getItemId));
+
     }
     /**
-     *
-     * @param freeItems
-     * @return
+     *which is used to sort the list based on the unit price
+     * @param freeItems which is required
+     * @return this is used to return sorted items list based on the unit price
      */
-    private List<ItemsResponse> sortOnUnitPrice(List<ItemsResponse> freeItems) {
+    private List<ItemsResponse> sortOnUnitPrice(List<ItemsResponse> freeItems)
+    {
+        log.debug("sorted freeOffer type based on the item price-->{}",freeItems.stream().
+                sorted(Comparator.comparing(ItemsResponse::getUnitPrice)).collect(Collectors.toList()));
         return freeItems.stream().
                 sorted(Comparator.comparing(ItemsResponse::getUnitPrice)).collect(Collectors.toList());
     }
 
-    /**
-     *
-     * @param item
-     * @return
-     */
-    private Optional<Offers> getOffer(Optional<Items> item) {
-        return offersRepository.findById(item.get().getOfferId());
-    }
 
-    /**
-     *
-     * @param requestCustomerItems
-     * @return
-     */
-    private List<Optional<Items>> getItemDetails(RequestCustomerItems requestCustomerItems) {
-        return requestCustomerItems.getItemId().stream()
-                .map(itemId -> itemsRepository.findById(itemId))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     *
-     * @param requestCustomerItems
-     * @return
-     */
-    private Optional<Customer> getCustomerDetails(RequestCustomerItems requestCustomerItems) {
-        return customerRepository
-                .findById(requestCustomerItems.getCustomerID());
-    }
 }

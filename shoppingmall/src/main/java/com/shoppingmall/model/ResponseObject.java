@@ -10,7 +10,11 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseObject {
+/*
+ *it has responseCode,statusCode and reponseStatus,timestamp and message,status variables
+ */
+public class ResponseObject
+{
     private String responseCode;
     private String statusCode;
     private String reponseStatus;

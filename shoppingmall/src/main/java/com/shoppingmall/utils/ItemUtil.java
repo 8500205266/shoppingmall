@@ -1,27 +1,26 @@
 package com.shoppingmall.utils;
 
-import com.shoppingmall.exception.ItemNotFoundException;
 import com.shoppingmall.model.Items;
 import com.shoppingmall.model.ItemsResponse;
 import com.shoppingmall.model.Offers;
-import com.shoppingmall.service.RequestAndResponseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 @Component
 public class ItemUtil
 {
-    static final Logger log = LoggerFactory.getLogger(ItemUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(ItemUtil.class);
     /**
-     *
-     * @param item
-     * @param offers
-     * @return
+     *this  method take item and offer and produce response of freeOfferType
+     * @param item this will take item
+     * @param offers this will take offer
+     * @return which is used to send response
      */
     public ItemsResponse freeOfferMethod( Optional<Items> item , Optional<Offers> offers)
     {
@@ -37,16 +36,15 @@ public class ItemUtil
                 itemsResponse.setOfferId(item.get().getOfferId());
                 itemsResponse.setNoOfUnits(1);
             }
-            String itemResponseString="item response-->";
-           // log.info(itemResponseString,itemsResponse);
-            log.debug("item response1111111-->"+itemsResponse);
+
+            logger.debug("item response of freeOfferType-->{}", itemsResponse);
             return itemsResponse;
     }
     /**
-     *
-     * @param item
-     * @param offers
-     * @return
+     *this  method take item and offer and produce response of dollerOffType
+     * @param item which required item
+     * @param offers whic required ofers
+     * @return which is used to return response of dolleroff
      */
     public ItemsResponse dollerOffMethod(Optional<Items> item , Optional<Offers> offers)
     {
@@ -61,19 +59,21 @@ public class ItemUtil
             dollerOffItemsResponse.setOfferId(item.get().getOfferId());
             dollerOffItemsResponse.setNoOfUnits(1);
         }
+        logger.debug("item response of dollerOffType-->{}", dollerOffItemsResponse);
         return dollerOffItemsResponse;
     }
     /**
-     *
-     * @param sortedFreeOffferList
-     * @return
+     *this method which was calculate freeOfferItems price
+     * @param sortedFreeOffferList which was taken sortedFreeOffferList
+     * @return which is used to return  freeOfferItems price
      */
     public int freeOfferItemsPrice( List<ItemsResponse> sortedFreeOffferList)
     {
-        Integer freeofferprice=0;
-        final Integer freeTotal = sortedFreeOffferList.stream()
-                                  .map(ItemsResponse::getUnitPrice)
-                                  .reduce((s1, s2) -> s1 + s2).get();
+
+
+        final Integer freeOfferTypeTotalPrice = sortedFreeOffferList.stream()
+                .map(ItemsResponse::getUnitPrice)
+                .reduce((s1, s2) -> s1 + s2).orElse(0);
 
         int freeOfferSize=0;
         if(sortedFreeOffferList.size()%2==0)
@@ -84,21 +84,26 @@ public class ItemUtil
         {
             freeOfferSize=sortedFreeOffferList.size()-1;
         }
-        for (int i = 0; i <freeOfferSize; i=i+2)
+
+        AtomicInteger freeOfferTypePairPrice= new AtomicInteger(0);
+        IntStream.range(0,freeOfferSize-1).forEach(i->
         {
-            freeofferprice=freeofferprice+sortedFreeOffferList.get(i).getUnitPrice();
-        }
-        //IntStream
+            if(i%2==0)
+            {
+                freeOfferTypePairPrice.set(freeOfferTypePairPrice.get() + sortedFreeOffferList.get(i).getUnitPrice());
+            }
 
-        int  totalfreeofferprice = freeTotal - freeofferprice;
+        });
 
+        int  totalfreeofferprice = freeOfferTypeTotalPrice-freeOfferTypePairPrice.get();
+        logger.debug("freeOfferTypeTotalPrice {}",totalfreeofferprice );
         return totalfreeofferprice;
     }
 
     /**
-     *
-     * @param sortedDollerItems
-     * @return
+     *this method which is used to calculate dollerOffItems based on the price
+     * @param sortedDollerItems which is taken sortedDollerItems
+     * @return dollerOffItemsprice
      */
     public int dolllerOffPrrice(List<ItemsResponse> sortedDollerItems )
     {
@@ -112,28 +117,32 @@ public class ItemUtil
         {
             dolleroffSize=sortedDollerItems.size()-1;
         }
-
-        int dollerTotal = sortedDollerItems.stream().map(ItemsResponse::getUnitPrice).reduce((s1,s2)->s1+s2).get();
-
-        System.out.println("price-->"+dollerTotal);
-        Integer dollerofferprice=0;
-        for (int i = 0; i < dolleroffSize; i=i+2)
+        final Integer dollerOffTotalPrice = sortedDollerItems.stream()
+                .map(ItemsResponse::getUnitPrice)
+                .reduce((s1, s2) -> s1 + s2).orElse(0);
+        AtomicInteger dollerOffTypePairPrice= new AtomicInteger(0);
+        IntStream.range(0,dolleroffSize-1).forEach(i->
         {
-            dollerofferprice=dollerofferprice+sortedDollerItems.get(i).getDiscountValue();
-        }
-        dollerofferprice = dollerTotal - dollerofferprice;
-        return dollerofferprice;
+            if(i%2==0)
+            {
+                dollerOffTypePairPrice.set(dollerOffTypePairPrice.get() + sortedDollerItems.get(i).getDiscountValue());
+            }
+
+        });
+        int finalDollerOffPrice = dollerOffTotalPrice -dollerOffTypePairPrice.get();
+        logger.debug("dollerOffTotalPrice--{}",finalDollerOffPrice);
+        return finalDollerOffPrice;
     }
 
     /**
-     *
-     * @param freeItemsMap
-     * @param finalFree
-     * @return
+     *this method which is calculate the number of units of items
+     * @param freeOfferTypeItemsMap which is required finalItemMap
+     * @param finalFreeOfferTypeResponse which is required finaFree
+     * @return which is provide the itemresponse
      */
-    public List<ItemsResponse>  finalFreeOfferList( Map<Integer, List<ItemsResponse>>  freeItemsMap , List<ItemsResponse>  finalFree)
+    public List<ItemsResponse>  finalFreeOfferList( Map<Integer, List<ItemsResponse>>  freeOfferTypeItemsMap , List<ItemsResponse>  finalFreeOfferTypeResponse)
     {
-        freeItemsMap.forEach((id, list) ->
+        freeOfferTypeItemsMap.forEach((id, list) ->
         {
             ItemsResponse itemsResponse = new ItemsResponse();
             itemsResponse.setItemId(list.get(0).getItemId());
@@ -142,16 +151,17 @@ public class ItemUtil
             itemsResponse.setDiscountValue(list.get(0).getDiscountValue());
             itemsResponse.setOfferId(list.get(0).getOfferId());
             itemsResponse.setNoOfUnits(list.size());
-            finalFree.add(itemsResponse);
+            finalFreeOfferTypeResponse.add(itemsResponse);
         });
-        return finalFree;
+        logger.info("finalFreeOfferTypeResponse-->{}",finalFreeOfferTypeResponse);
+        return finalFreeOfferTypeResponse;
     }
 
     /**
-     *
-     * @param dollerItemsMap
-     * @param finalDollerOffList
-     * @return
+     *this method which is calculate the number of units of items
+     * @param dollerItemsMap which is required dollerItemsMap
+     * @param finalDollerOffList which is required  finalDollerOffList
+     * @return which is provide the itemresponse
      */
     public List<ItemsResponse> finalDollerOffList( Map<Integer, List<ItemsResponse>>  dollerItemsMap , List<ItemsResponse> finalDollerOffList)
     {
@@ -166,6 +176,7 @@ public class ItemUtil
             itemsResponse.setNoOfUnits(list.size());
             finalDollerOffList.add(itemsResponse);
         });
+        logger.debug("finalDollerOffList-->{}",finalDollerOffList);
         return finalDollerOffList;
     }
 }

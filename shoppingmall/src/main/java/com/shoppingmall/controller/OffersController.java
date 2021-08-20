@@ -1,6 +1,6 @@
 package com.shoppingmall.controller;
-
 import com.shoppingmall.exception.OfferNotFoundException;
+import com.shoppingmall.mapper.ShoppingMallMapper;
 import com.shoppingmall.model.OfferDto;
 import com.shoppingmall.model.Offers;
 import com.shoppingmall.service.OffersService;
@@ -14,9 +14,9 @@ public class OffersController
 {
     @Autowired
     private OffersService offersService;
-
     @Autowired
-    private ModelMapper modelMapper;
+    private ShoppingMallMapper shoppingMallMapper;
+
 
     private String offerIdNotFound="Offer ID is Not Found!!!";
 
@@ -38,7 +38,7 @@ public class OffersController
     @PostMapping()
     public Offers addOffers(@RequestBody OfferDto offerDto)
     {
-        Offers offers=modelMapper.map(offerDto,Offers.class);
+        Offers offers=shoppingMallMapper.toOffers(offerDto);
         return offersService.addOffers(offers);
     }
 
@@ -80,9 +80,9 @@ public class OffersController
     public Offers updateData(@PathVariable("id") int id, @RequestBody OfferDto offerDto)
             throws OfferNotFoundException
     {
-        Offers offers=modelMapper.map(offerDto,Offers.class);
         final Offers offerById = offersService.findOfferById(id).orElseThrow(() -> new
                 OfferNotFoundException(offerIdNotFound));
+        Offers offers=shoppingMallMapper.toOffers(offerDto);
         offerById.setOfferType(offers.getOfferType());
         offerById.setDiscountValue(offers.getDiscountValue());
         return offersService.updateOffer(offerById);

@@ -9,7 +9,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-
+/**
+ * it has customerId and customerName variables
+ */
 public class Customer
 {
     @Id

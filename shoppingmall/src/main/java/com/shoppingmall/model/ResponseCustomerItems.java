@@ -8,6 +8,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+/*
+ * it has customerName,customerId and offertype,totalPrice and freeItemsPrice,dollerItemsPrice variables
+ */
 public class ResponseCustomerItems
 {
     private String customerName;

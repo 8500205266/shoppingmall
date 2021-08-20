@@ -9,7 +9,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-
+/*
+ * it has ItemId,unitprice and offerId variables
+ */
 public class Items
 {
     @Id

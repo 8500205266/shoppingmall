@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
+/*
+ * it has ItemId,unitprice and discountValue,noOfUnits and itemType, offerId variables
+ */
 public class ItemsResponse
 {
 
