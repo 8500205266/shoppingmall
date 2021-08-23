@@ -1,7 +1,7 @@
 package com.shoppingmall.controller;
 
 
-import com.shoppingmall.exception.CustomerNotFoundException;
+import com.shoppingmall.exception.ItemsNotFound;
 import com.shoppingmall.model.RequestCustomerItems;
 import com.shoppingmall.model.ResponseCustomerItems;
 import com.shoppingmall.service.RequestAndResponseService;
@@ -25,11 +25,11 @@ public class RequestCustomerItemsController
      *we will provide customer Id and items here
      * @param requestCustomerItems it has customer id and list of items
      * @return list of items with offer id and customer Id and total price of items
-     * @throws CustomerNotFoundException if customer id not found then it returns CustomerNotFoundException
+     * @throws ItemsNotFound if customer id not found then it returns CustomerNotFoundException
      */
     @PostMapping
     public ResponseCustomerItems addCustomerItemsList(@RequestBody final RequestCustomerItems requestCustomerItems)
-            throws  CustomerNotFoundException
+            throws ItemsNotFound
             {
                 return requestAndResponseService.placeOrder(requestCustomerItems);
             }

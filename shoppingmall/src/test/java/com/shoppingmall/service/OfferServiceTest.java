@@ -60,4 +60,11 @@ import static org.mockito.Mockito.*;
         verify(offersRepository,times(1)).delete(offer);
     }
 
+    @Test
+    void updateOfferInOfferServiceTest()
+    {
+        Offers offer=new Offers(10,"doller-off",12); Items item=new Items(10,50,12);
+        when(offersRepository.save(offer)).thenReturn(offer);
+        Assert.assertNotNull(offersService.updateOffer(offer));
+    }
 }

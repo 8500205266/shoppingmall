@@ -1,8 +1,12 @@
 package com.shoppingmall.model;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 /*
  * it has OfferId,offerType and discountValue variables
  */

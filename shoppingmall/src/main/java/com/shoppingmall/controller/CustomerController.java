@@ -1,10 +1,9 @@
 package com.shoppingmall.controller;
-import com.shoppingmall.exception.CustomerNotFoundException;
+import com.shoppingmall.exception.ItemsNotFound;
 import com.shoppingmall.mapper.ShoppingMallMapper;
 import com.shoppingmall.model.Customer;
 import com.shoppingmall.model.CustomerDto;
 import com.shoppingmall.service.CustomerService;
-import com.shoppingmall.service.RequestAndResponseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,24 +52,24 @@ public class CustomerController
      * It is provides customer details when we pass customerId
      * @param id pass the customerId
      * @return customer details
-     * @throws CustomerNotFoundException if id is not Found then it throws CustomerNotFoundException
+     * @throws ItemsNotFound if id is not Found then it throws CustomerNotFoundException
      */
     @GetMapping("/{id}")
-    public Customer getCustomerById(@PathVariable("id") int id) throws CustomerNotFoundException
+    public Customer getCustomerById(@PathVariable("id") int id) throws ItemsNotFound
     {
         return customerService.findCustomerById(id).orElseThrow(() -> new
-                CustomerNotFoundException(customernotfound));
+                ItemsNotFound(customernotfound));
     }
     /**
      *It is used to delete customer when we pass customerId of customer
      * @param id pass the customer id
-     * @throws CustomerNotFoundException if id is not Found then it throws CustomerNotFoundException
+     * @throws ItemsNotFound if id is not Found then it throws CustomerNotFoundException
      */
     @DeleteMapping("/{id}")
-    public void deleteCustomerById(@PathVariable("id") int id) throws CustomerNotFoundException
+    public void deleteCustomerById(@PathVariable("id") int id) throws ItemsNotFound
     {
         final Customer customerById = customerService.findCustomerById(id).orElseThrow(() -> new
-                CustomerNotFoundException(customernotfound));
+                ItemsNotFound(customernotfound));
           customerService.deleteCustomer(customerById);
     }
 
@@ -79,15 +78,15 @@ public class CustomerController
      * @param id pass the customer id
      * @param customerDto we will pass customer to customerDto
      * @return it is return updated customer
-     * @throws CustomerNotFoundException if customer id not found then it returns CustomerNotFoundException
+     * @throws ItemsNotFound if customer id not found then it returns CustomerNotFoundException
      */
     @PutMapping("/{id}")
     public Customer updateData(@PathVariable("id") int id, @RequestBody CustomerDto customerDto)
-            throws CustomerNotFoundException
+            throws ItemsNotFound
         {
 
         final Customer customerById =customerService.findCustomerById(id).orElseThrow(() -> new
-                CustomerNotFoundException(customernotfound));
+                ItemsNotFound(customernotfound));
             Customer customer=shoppingMallMapper.toCustomer(customerDto);
         customerById.setCustomerName(customer.getCustomerName());
         return customerService.updateCustomerData(customerById);

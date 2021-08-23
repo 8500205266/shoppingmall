@@ -26,6 +26,7 @@ class ItemsServiceTest
     Logger logger = LoggerFactory.getLogger(CustomerServiceTest.class);
     @Autowired
     private ItemsService itemsService;
+
     @MockBean
     private ItemsRepository itemsRepository;
 
@@ -57,12 +58,19 @@ class ItemsServiceTest
         }
 
     @Test
-    void deleteItemTest()
+    void deleteItemInItemServiceTest()
     {
         Integer itemId=10;
         Items item=new Items(10,50,12);
         itemsService.deleteItem(item);
         verify(itemsRepository,times(1)).delete(item);
+    }
+    @Test
+    void updateItemTestInItemServiceTest()
+    {
+        Items item=new Items(10,50,12);
+        when(itemsRepository.save(item)).thenReturn(item);
+        Assert.assertNotNull(itemsService.updateItem(item));
     }
     }
 

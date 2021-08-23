@@ -17,8 +17,8 @@ public class Handler extends RuntimeException
      * @param ex this is the message from CustomerNotFoundException class
      * @return it is returns the ResponseObject
      */
-    @ExceptionHandler(CustomerNotFoundException.class)
-        public ResponseEntity<ResponseObject> handle(CustomerNotFoundException ex)
+    @ExceptionHandler(ItemsNotFound.class)
+        public ResponseEntity<ResponseObject> handle(ItemsNotFound ex)
         {
             ResponseObject response = new ResponseObject();
             response.setResponseCode("404");

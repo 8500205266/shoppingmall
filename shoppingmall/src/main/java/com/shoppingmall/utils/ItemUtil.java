@@ -69,12 +69,9 @@ public class ItemUtil
      */
     public int freeOfferItemsPrice( List<ItemsResponse> sortedFreeOffferList)
     {
-
-
         final Integer freeOfferTypeTotalPrice = sortedFreeOffferList.stream()
                 .map(ItemsResponse::getUnitPrice)
                 .reduce((s1, s2) -> s1 + s2).orElse(0);
-
         int freeOfferSize=0;
         if(sortedFreeOffferList.size()%2==0)
         {
@@ -108,6 +105,7 @@ public class ItemUtil
     public int dolllerOffPrrice(List<ItemsResponse> sortedDollerItems )
     {
 
+        logger.info("sortedDollerItems-->{}",sortedDollerItems);
         int dolleroffSize=0;
         if(sortedDollerItems.size()%2==0)
         {
@@ -142,6 +140,8 @@ public class ItemUtil
      */
     public List<ItemsResponse>  finalFreeOfferList( Map<Integer, List<ItemsResponse>>  freeOfferTypeItemsMap , List<ItemsResponse>  finalFreeOfferTypeResponse)
     {
+        logger.info("freeOfferTypeItemsMap--{}",freeOfferTypeItemsMap.toString());
+        logger.info("finalFreeOfferTypeResponse--{}",finalFreeOfferTypeResponse.toString());
         freeOfferTypeItemsMap.forEach((id, list) ->
         {
             ItemsResponse itemsResponse = new ItemsResponse();

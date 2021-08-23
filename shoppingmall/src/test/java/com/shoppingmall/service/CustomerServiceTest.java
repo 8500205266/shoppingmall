@@ -55,17 +55,24 @@ import static org.mockito.Mockito.*;
     @Test
      void saveCustomerTest()
     {
-        Customer customer=new Customer(18,"Kohli");
-        when(customerRepository.save(customer)).thenReturn(customer);
-        Assert.assertEquals(customer,customerService.addCustomer(customer));
+        Customer savedcustomer=new Customer(200,"raina");
+        when(customerRepository.save(savedcustomer)).thenReturn(savedcustomer);
+        Assert.assertEquals(savedcustomer,customerService.addCustomer(savedcustomer));
     }
 
     @Test
     void deleteCustomerTest()
     {
-        Integer customerId=1;
+       // Integer customerId=1;
         Customer customer=new Customer(18,"Kohli");
         customerService.deleteCustomer(customer);
         verify(customerRepository,times(1)).delete(customer);
+    }
+    @Test
+    void updateCustomerTest()
+    {
+        Customer customer=new Customer(18,"Kohli");
+        when(customerRepository.save(customer)).thenReturn(customer);
+        Assert.assertNotNull(customerService.updateCustomerData(customer));
     }
 }
