@@ -1,10 +1,7 @@
 package com.shoppingmall.controller;
 
-import com.shoppingmall.exception.ItemsNotFound;
 import com.shoppingmall.exception.OfferNotFoundException;
 import com.shoppingmall.mapper.ShoppingMallMapper;
-import com.shoppingmall.model.Customer;
-import com.shoppingmall.model.CustomerDto;
 import com.shoppingmall.model.OfferDto;
 import com.shoppingmall.model.Offers;
 import com.shoppingmall.service.OffersService;

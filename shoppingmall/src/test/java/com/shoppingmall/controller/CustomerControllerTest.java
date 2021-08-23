@@ -1,6 +1,6 @@
 package com.shoppingmall.controller;
 
-import com.shoppingmall.exception.ItemsNotFound;
+import com.shoppingmall.exception.CustomerNotFoundException;
 import com.shoppingmall.mapper.ShoppingMallMapper;
 import com.shoppingmall.model.Customer;
 import com.shoppingmall.model.CustomerDto;
@@ -44,7 +44,7 @@ public class CustomerControllerTest
 
     }
     @Test
-    public void getCustomerByCustomerIdTest() throws ItemsNotFound {
+    public void getCustomerByCustomerIdTest() throws CustomerNotFoundException {
        final Integer  customerId=1;
         when(customerService.findCustomerById(customerId)).
                 thenReturn(Optional.of(new Customer(1, "ravi")), Optional.of(new Customer(2,"rajesh")));
@@ -65,7 +65,7 @@ public class CustomerControllerTest
     }
 
     @Test
-    public  void deleteCustomerTest() throws ItemsNotFound {
+    public  void deleteCustomerTest() throws CustomerNotFoundException {
         Customer customer=new Customer(2,"Kohli");
         when(customerService.findCustomerById(2)).thenReturn(Optional.of(customer));
         customerController.deleteCustomerById(2);
@@ -75,7 +75,7 @@ public class CustomerControllerTest
     }
 
     @Test
-    public void updateCustomerTest() throws ItemsNotFound {
+    public void updateCustomerTest() throws CustomerNotFoundException {
 
         when(customerService.findCustomerById(20)).
                 thenReturn(Optional.of(new Customer(20, "NTR")));

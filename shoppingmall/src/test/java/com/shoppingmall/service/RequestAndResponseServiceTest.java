@@ -1,6 +1,6 @@
 package com.shoppingmall.service;
 
-import com.shoppingmall.exception.ItemsNotFound;
+import com.shoppingmall.exception.CustomerNotFoundException;
 import com.shoppingmall.utils.ItemUtil;
 import com.shoppingmall.model.*;
 import com.shoppingmall.repository.CustomerRepository;
@@ -37,7 +37,7 @@ public class RequestAndResponseServiceTest {
     ItemUtil itemUtilInjectMock;
 */
     @Test
-    public void test_should_placeOrder() throws ItemsNotFound
+    public void test_should_placeOrder() throws CustomerNotFoundException
     {
         when(customerRepository.findById(any())).thenReturn(Optional.of(new Customer(1, "prashanth")));
         when(itemUtil.freeOfferMethod(any(), any())).thenReturn(new ItemsResponse(1, 10, 10, 2, "free-offer", 1));

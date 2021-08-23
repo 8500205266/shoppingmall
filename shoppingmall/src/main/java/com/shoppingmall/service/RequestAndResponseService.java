@@ -1,6 +1,6 @@
 package com.shoppingmall.service;
 
-import com.shoppingmall.exception.ItemsNotFound;
+import com.shoppingmall.exception.CustomerNotFoundException;
 import com.shoppingmall.utils.ItemUtil;
 import com.shoppingmall.model.*;
 import com.shoppingmall.repository.CustomerRepository;
@@ -46,7 +46,7 @@ public class RequestAndResponseService
     static final Logger log = LoggerFactory.getLogger(RequestAndResponseService.class);
 
     public ResponseCustomerItems placeOrder(RequestCustomerItems requestCustomerItems)
-            throws ItemsNotFound
+            throws CustomerNotFoundException
     {
         ResponseCustomerItems responseCustomerItems = new ResponseCustomerItems();
 
@@ -107,7 +107,7 @@ public class RequestAndResponseService
             responseCustomerItems.setTotalPrice(totalprice);
             return responseCustomerItems;
         } else {
-            throw new ItemsNotFound("custmer is not found!!!!!");
+            throw new CustomerNotFoundException("custmer is not found!!!!!");
         }
     }
 
