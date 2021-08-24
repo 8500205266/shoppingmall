@@ -16,4 +16,5 @@ public interface ShoppingMallMapper
     Customer toCustomer(CustomerDto customerDto);
     Items toItems(ItemsDto itemsDto);
     Offers toOffers(OfferDto offerDto);
+
 }

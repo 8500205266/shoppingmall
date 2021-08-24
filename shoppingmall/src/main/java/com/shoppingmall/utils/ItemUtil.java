@@ -140,8 +140,8 @@ public class ItemUtil
      */
     public List<ItemsResponse>  finalFreeOfferList( Map<Integer, List<ItemsResponse>>  freeOfferTypeItemsMap , List<ItemsResponse>  finalFreeOfferTypeResponse)
     {
-        logger.info("freeOfferTypeItemsMap--{}",freeOfferTypeItemsMap.toString());
-        logger.info("finalFreeOfferTypeResponse--{}",finalFreeOfferTypeResponse.toString());
+        logger.info("freeOfferTypeItemsMap--{}",freeOfferTypeItemsMap);
+        logger.info("finalFreeOfferTypeResponse--{}",finalFreeOfferTypeResponse);
         freeOfferTypeItemsMap.forEach((id, list) ->
         {
             ItemsResponse itemsResponse = new ItemsResponse();

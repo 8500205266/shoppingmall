@@ -1,10 +1,10 @@
 package com.shoppingmall.controller;
+import com.shoppingmall.enumdatatype.ExceptionNamesWithCode;
 import com.shoppingmall.exception.OfferNotFoundException;
 import com.shoppingmall.mapper.ShoppingMallMapper;
 import com.shoppingmall.model.OfferDto;
 import com.shoppingmall.model.Offers;
 import com.shoppingmall.service.OffersService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -18,7 +18,7 @@ public class OffersController
     private ShoppingMallMapper shoppingMallMapper;
 
 
-    private String offerIdNotFound="Offer ID is Not Found!!!";
+    ExceptionNamesWithCode.Error offerIdNotFound=ExceptionNamesWithCode.Error.OFFERNOTFOUND;
 
     /**
      *it is used to return all offers

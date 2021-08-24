@@ -1,4 +1,5 @@
 package com.shoppingmall.controller;
+import com.shoppingmall.enumdatatype.ExceptionNamesWithCode;
 import com.shoppingmall.exception.CustomerNotFoundException;
 import com.shoppingmall.mapper.ShoppingMallMapper;
 import com.shoppingmall.model.Customer;
@@ -22,7 +23,7 @@ public class CustomerController
     public CustomerService customerService;
     static final Logger log = LoggerFactory.getLogger(CustomerController.class);
 
-    String customernotfound="Customer ID is Not Found!!!";
+    ExceptionNamesWithCode.Error customernotfound=ExceptionNamesWithCode.Error.CUSTOMERNOTFOUND;
     /**
      *
      * @return it is returns all customers

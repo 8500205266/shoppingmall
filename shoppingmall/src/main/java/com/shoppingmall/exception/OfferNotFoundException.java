@@ -1,5 +1,7 @@
 package com.shoppingmall.exception;
 
+import com.shoppingmall.enumdatatype.ExceptionNamesWithCode;
+
 public class OfferNotFoundException extends Exception
 {
     /**
@@ -7,8 +9,8 @@ public class OfferNotFoundException extends Exception
      * the base class will take care of the work of setting the message up correctly.
      * @param message
      */
-    public  OfferNotFoundException(String message)
+    public  OfferNotFoundException(ExceptionNamesWithCode.Error message)
     {
-        super(message);
+        super(String.valueOf(message));
     }
 }

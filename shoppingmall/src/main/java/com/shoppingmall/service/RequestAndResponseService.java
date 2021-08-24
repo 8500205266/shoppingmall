@@ -1,5 +1,6 @@
 package com.shoppingmall.service;
 
+import com.shoppingmall.enumdatatype.ExceptionNamesWithCode;
 import com.shoppingmall.exception.CustomerNotFoundException;
 import com.shoppingmall.utils.ItemUtil;
 import com.shoppingmall.model.*;
@@ -42,6 +43,7 @@ public class RequestAndResponseService
 
     @Autowired(required = true)
     private ItemUtil itemUtil;
+    ExceptionNamesWithCode.Error customernotfound=ExceptionNamesWithCode.Error.CUSTOMERNOTFOUND;
 
     static final Logger log = LoggerFactory.getLogger(RequestAndResponseService.class);
 
@@ -107,7 +109,7 @@ public class RequestAndResponseService
             responseCustomerItems.setTotalPrice(totalprice);
             return responseCustomerItems;
         } else {
-            throw new CustomerNotFoundException("custmer is not found!!!!!");
+            throw new CustomerNotFoundException(customernotfound);
         }
     }
 

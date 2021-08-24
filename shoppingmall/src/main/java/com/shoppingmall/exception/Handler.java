@@ -40,8 +40,8 @@ public class Handler extends RuntimeException
     {
         ResponseObject response = new ResponseObject();
         response.setResponseCode("404");
-        response.setReponseStatus("Item Id is Not Found!!!");
-        response.setStatus("Item Id is Not Found!!!");
+        response.setReponseStatus(ex.getMessage());
+        response.setStatus(HttpStatus.NOT_FOUND.toString());
         response.setStatusCode("404");
         response.setTimestamp(LocalDateTime.now());
         response.setMessage(ex.getMessage());
@@ -58,8 +58,8 @@ public class Handler extends RuntimeException
     {
         ResponseObject response = new ResponseObject();
         response.setResponseCode("404");
-        response.setReponseStatus("Offer Id  Not Found!!!");
-        response.setStatus("Offer Id  Not Found!!!");
+        response.setReponseStatus(ex.getMessage());
+        response.setStatus(HttpStatus.NOT_FOUND.toString());
         response.setStatusCode("404");
         response.setTimestamp(LocalDateTime.now());
         response.setMessage(ex.getMessage());

@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -30,9 +31,8 @@ class ShoppingmallApplicationTests
 
 
     @Test
-     public void testmainApplication()
+    void testmainApplication()
     {
-        System.out.println("cccc");
     }
 
 

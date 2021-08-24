@@ -1,4 +1,5 @@
 package com.shoppingmall.controller;
+import com.shoppingmall.enumdatatype.ExceptionNamesWithCode;
 import com.shoppingmall.exception.ItemNotFoundException;
 import com.shoppingmall.mapper.ShoppingMallMapper;
 import com.shoppingmall.model.Items;
@@ -16,7 +17,7 @@ public class ItemsController
 
     @Autowired
     private ShoppingMallMapper shoppingMallMapper;
-    private String itemNotFound="Item ID is Not Found!!!";
+    ExceptionNamesWithCode.Error itemNotFound=ExceptionNamesWithCode.Error.ITEMNOTFOUND;
 
     /**
      *it is use to provide all items

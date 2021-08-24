@@ -34,24 +34,25 @@ public class ItemUtilTest
     public void freeOfferTypePriceTest()
     {
         List<ItemsResponse> sortedList=new ArrayList<>();
+        ItemsResponse itemsResponse=new ItemsResponse();
         sortedList.add(new ItemsResponse(1,10,5,1,"free-offer",1));
         sortedList.add(new ItemsResponse(2,20,10,1,"free-offer",2));
         sortedList.add(new ItemsResponse(3,30,20,1,"free-offer",2));
-        final int freeOfferTypeItemsPrice = itemUtilInjectMock.freeOfferItemsPrice(sortedList);
-        System.out.println(sortedList);
-       logger.info("freeOfferTypeItemsPrice-->{}",freeOfferTypeItemsPrice);
-        Assert.assertNotNull(freeOfferTypeItemsPrice);
+       // final int freeOfferTypeItemsPrice = itemUtilInjectMock.freeOfferItemsPrice(sortedList);
+       logger.info("freeOfferTypeItemsPrice-->{}",itemUtilInjectMock.freeOfferItemsPrice(sortedList));
+        Assert.assertEquals(50,itemUtilInjectMock.freeOfferItemsPrice(sortedList));
     }
     @Test
     public void dollerOffTypePriceTest()
     {
         List<ItemsResponse> sortedList=new ArrayList<>();
+        ItemsResponse itemsResponse=new ItemsResponse();
         sortedList.add(new ItemsResponse(1,20,10,1,"doller-off",1));
         sortedList.add(new ItemsResponse(2,30,20,1,"doller-off",2));
         sortedList.add(new ItemsResponse(3,10,5,1,"doller-off",3));
         final int dollerOffTypeItemsPrice  = itemUtilInjectMock.dolllerOffPrrice(sortedList);
         logger.info("dollerOffTypeItemsPrice--{}",dollerOffTypeItemsPrice);
-        Assert.assertNotNull(dollerOffTypeItemsPrice);
+        Assert.assertEquals(50,dollerOffTypeItemsPrice);
     }
 
     @Test
