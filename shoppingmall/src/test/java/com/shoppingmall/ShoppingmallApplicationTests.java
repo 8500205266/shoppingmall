@@ -33,6 +33,7 @@ class ShoppingmallApplicationTests
     @Test
     void testmainApplication()
     {
+        System.out.println("this main test application!!");
     }
 
 

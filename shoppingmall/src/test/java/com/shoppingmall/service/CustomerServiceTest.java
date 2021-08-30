@@ -1,77 +1,85 @@
 package com.shoppingmall.service;
 
+
+import com.shoppingmall.datautil.UtilityModel;
 import com.shoppingmall.model.Customer;
+import com.shoppingmall.model.CustomerDto;
 import com.shoppingmall.repository.CustomerRepository;
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.OngoingStubbing;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Sort;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
- class CustomerServiceTest
+@RunWith(SpringRunner.class)
+ public class CustomerServiceTest
 {
     Logger logger = LoggerFactory.getLogger(CustomerServiceTest.class);
-    @Autowired
+    @InjectMocks
     private CustomerService customerService;
 
-    @MockBean
+    @Mock
     private CustomerRepository customerRepository;
+    static Customer customer1;
+    static  Customer customer2;
+    static CustomerDto customerDto;
+    static Customer customer;
+    static List<Customer> customerList;
+    UtilityModel utilityModel=new UtilityModel();
 
-    @Test
-     void getCustomersTest()
+    @Before
+     public void init()
     {
-        final OngoingStubbing<List<Customer>> customerList = when(customerRepository.findAll())
-                .thenReturn(Stream.of(new Customer(1, "venky"),
-                new Customer(2, "raaju")).collect(Collectors.toList()));
-        logger.info("Customer List-->"+customerService.getCustomer().toString());
-
-        final List<Customer> actualResult = customerService.getCustomer();
-
-        Assert.assertEquals(2, actualResult.stream().count());
+        customer1=utilityModel.customerData().get(0);
+        customer2=utilityModel.customerData().get(1);
+        customer=utilityModel.customerData().get(2);
+        customerDto=utilityModel.customerDtoData();
+        customerList=utilityModel.customerData();
+        logger.info("customer list--{}"+customerList);
     }
 
     @Test
-    void getCustomerByIdTest()
+    public void getCustomersTest()
+    {
+        when(customerRepository.findAll()).thenReturn(customerList);
+        logger.info("Customer List-->"+customerService.getCustomer().toString());
+        final List<Customer> actualResult = customerService.getCustomer();
+        Assert.assertNotNull(actualResult);
+    }
+
+    @Test
+    public void getCustomerByIdTest()
     {
          Integer customerId=2;
-       when(customerRepository.findById(customerId)).
-               thenReturn(Optional.of(new Customer(1, "ravi")),
-                       Optional.of(new Customer(2,"Rajesh")));
+       when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer1));
        Assert.assertEquals(1,customerService.findCustomerById(customerId).stream().count());
     }
 
     @Test
-     void saveCustomerTest()
+     public void saveCustomerTest()
     {
-        Customer savedcustomer=new Customer(200,"raina");
-        when(customerRepository.save(savedcustomer)).thenReturn(savedcustomer);
-        Assert.assertEquals(savedcustomer,customerService.addCustomer(savedcustomer));
+        when(customerRepository.save(customer)).thenReturn(customer);
+        Assert.assertEquals(customer,customerService.addCustomer(customer));
     }
 
     @Test
-    void deleteCustomerTest()
+    public void deleteCustomerTest()
     {
-       // Integer customerId=1;
-        Customer customer=new Customer(18,"Kohli");
         customerService.deleteCustomer(customer);
         verify(customerRepository,times(1)).delete(customer);
     }
     @Test
-    void updateCustomerTest()
+   public void updateCustomerTest()
     {
-        Customer customer=new Customer(18,"Kohli");
         when(customerRepository.save(customer)).thenReturn(customer);
         Assert.assertNotNull(customerService.updateCustomerData(customer));
     }

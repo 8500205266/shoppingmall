@@ -1,70 +1,86 @@
 package com.shoppingmall.service;
 
-import com.shoppingmall.model.Items;
+
+import com.shoppingmall.controller.OfferControllerTest;
+import com.shoppingmall.datautil.UtilityModel;
+import com.shoppingmall.model.OfferDto;
 import com.shoppingmall.model.Offers;
 import com.shoppingmall.repository.OffersRepository;
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.OngoingStubbing;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
- class OfferServiceTest
+@RunWith(SpringRunner.class)
+public class OfferServiceTest
 {
-    @Autowired
+    @InjectMocks
     private OffersService offersService;
 
-    @MockBean
+    @Mock
     private OffersRepository offersRepository;
 
-    @Test
-     void getOffersTest()
+    final Logger logger = LoggerFactory.getLogger(OfferControllerTest.class);
+    static Offers offer1;
+    static Offers offer2;
+    static OfferDto offerDto;
+    UtilityModel utilityModel=new UtilityModel();
+    static List<Offers> offersList;
+
+    @Before
+    public void init()
     {
-                when(offersRepository.findAll())
-                .thenReturn(Stream.of(new Offers(10,"offer-type",12),
-                        new Offers(11,"doller-off",15)).collect(Collectors.toList()));
-                Assert.assertEquals(2,offersService.getOffers().size());
+        offer1=utilityModel.offersData().get(0);
+        offer2=utilityModel.offersData().get(1);
+        System.out.println(offer1);
+        System.out.println(offer2);
+        offersList =utilityModel.offersData();
+        System.out.println(offersList);
     }
 
     @Test
-    void getOfferByIdTest() {
-        Integer offerId = 10;
-        when(offersRepository.findById(offerId)).
-                thenReturn(Optional.of(new Offers(10, "doller-off", 12)),
-                        Optional.of(new Offers(11, "free-offer", 15)));
+    public void getOffersTest()
+    {
+        when(offersRepository.findAll()).thenReturn(offersList);
+        System.out.println(offersService.getOffers());
+        Assert.assertNotNull(offersService.getOffers());
+    }
+
+    @Test
+    public void getOfferByIdTest() {
+        Integer offerId = 2;
+        when(offersRepository.findById(offerId)).thenReturn(Optional.ofNullable(offer1));
         Assert.assertEquals(1, offersService.findOfferById(offerId).stream().count());
 
     }
     @Test
-    void saveOfferTest()
+    public  void saveOfferTest()
     {
-        Offers offer=new Offers(10,"doller-off",12);
-        when(offersRepository.save(offer)).thenReturn(offer);
-        Assert.assertEquals(offer,offersService.addOffers(offer));
+        when(offersRepository.save(offer1)).thenReturn(offer1);
+        Assert.assertEquals(offer1,offersService.addOffers(offer1));
     }
 
     @Test
-    void deleteOfferTest()
+    public void deleteOfferTest()
     {
-        Integer offerId=10;
-        Offers offer=new Offers(10,"doller-off",12);
-        offersService.deleteOffer(offer);
-        verify(offersRepository,times(1)).delete(offer);
+        offersService.deleteOffer(offer1);
+        verify(offersRepository,times(1)).delete(offer1);
     }
 
     @Test
-    void updateOfferInOfferServiceTest()
+    public   void updateOfferInOfferServiceTest()
     {
-        Offers offer=new Offers(10,"doller-off",12); Items item=new Items(10,50,12);
-        when(offersRepository.save(offer)).thenReturn(offer);
-        Assert.assertNotNull(offersService.updateOffer(offer));
+        when(offersRepository.save(offer1)).thenReturn(offer1);
+        Assert.assertNotNull(offersService.updateOffer(offer1));
     }
 }

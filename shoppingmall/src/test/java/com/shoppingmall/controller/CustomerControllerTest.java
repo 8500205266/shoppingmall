@@ -1,17 +1,20 @@
 package com.shoppingmall.controller;
 
+import com.shoppingmall.datautil.UtilityModel;
 import com.shoppingmall.exception.CustomerNotFoundException;
 import com.shoppingmall.mapper.ShoppingMallMapper;
 import com.shoppingmall.model.Customer;
 import com.shoppingmall.model.CustomerDto;
 import com.shoppingmall.service.CustomerService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
@@ -32,32 +35,44 @@ public class CustomerControllerTest
     @Mock
     private ShoppingMallMapper shoppingMallMapper;
 
+   static Customer customer1;
+   static  Customer customer2;
+   static  CustomerDto customerDto;
+   static Customer customer;
+
+    UtilityModel utilityModel=new UtilityModel();
+    @Before
+    public void init()
+    {
+        customer1=utilityModel.customerData().get(0);
+        customer2=utilityModel.customerData().get(1);
+        customer=utilityModel.customerData().get(2);
+        customerDto=utilityModel.customerDtoData();
+    }
+
     final Logger logger = LoggerFactory.getLogger(CustomerControllerTest.class);
 
     @Test
     public void getCustomerListTest()
     {
 
-        when(customerService.getCustomer()).thenReturn(Stream.of(new Customer(1,"Virat"),new Customer(2,"Dhoni")).collect(Collectors.toList()));
+        when(customerService.getCustomer()).thenReturn(Stream.of(customer1,customer2).collect(Collectors.toList()));
         logger.info("Customer Name-->{}",customerController.getCustomer().get(0).getCustomerName());
-        Assert.assertEquals("Virat",customerController.getCustomer().get(0).getCustomerName());
+        Assert.assertEquals("Virat Kohli",customerController.getCustomer().get(0).getCustomerName());
 
     }
     @Test
     public void getCustomerByCustomerIdTest() throws CustomerNotFoundException {
        final Integer  customerId=1;
-        when(customerService.findCustomerById(customerId)).
-                thenReturn(Optional.of(new Customer(1, "ravi")), Optional.of(new Customer(2,"rajesh")));
+        when(customerService.findCustomerById(customerId)).thenReturn(Optional.of(customer1));
         logger.debug("Customer Name By CustomerId-->{}",customerController.getCustomerById(customerId).getCustomerName());
-        Assert.assertEquals("rajesh",customerController.getCustomerById(customerId).getCustomerName());
+        Assert.assertEquals("Virat Kohli",customerController.getCustomerById(customerId).getCustomerName());
     }
 
 
     @Test
     public void saveCustomerInControllerTest()
     {
-        CustomerDto customerDto=new CustomerDto(18,"Kohli");
-        Customer customer=new Customer(18,"Kohli");
         when(shoppingMallMapper.toCustomer(customerDto)).thenReturn(customer);
         when(customerService.addCustomer(customer)).thenReturn(customer);
         logger.debug("new Customer--{}"+customer);
@@ -65,10 +80,11 @@ public class CustomerControllerTest
     }
 
     @Test
-    public  void deleteCustomerTest() throws CustomerNotFoundException {
-        Customer customer=new Customer(2,"Kohli");
-        when(customerService.findCustomerById(2)).thenReturn(Optional.of(customer));
-        customerController.deleteCustomerById(2);
+    public  void deleteCustomerTest() throws CustomerNotFoundException
+    {
+        final Integer customerId=2;
+        when(customerService.findCustomerById(customerId)).thenReturn(Optional.of(customer));
+        customerController.deleteCustomerById(customerId);
         System.out.println("customer-->"+customer);
         logger.debug("Delete Custommer--{}",customer);
         verify(customerService,times(1)).deleteCustomer(customer);
@@ -76,14 +92,11 @@ public class CustomerControllerTest
 
     @Test
     public void updateCustomerTest() throws CustomerNotFoundException {
-
-        when(customerService.findCustomerById(20)).
-                thenReturn(Optional.of(new Customer(20, "NTR")));
-        Customer customer=new Customer(20,"Ram");
-        CustomerDto customerDto=new CustomerDto(20,"Ravi");
+        final Integer customerId=1;
+        when(customerService.findCustomerById(customerId)).thenReturn(Optional.of(customer));
         when(shoppingMallMapper.toCustomer(customerDto)).thenReturn(customer);
         when(customerService.updateCustomerData(customer)).thenReturn(customer);
-        final Customer updateCustomer = customerController.updateData(20, customerDto);
+        final Customer updateCustomer = customerController.updateData(customerId, customerDto);
         logger.debug("Update Customer--{}",updateCustomer);
         Assert.assertNotNull(updateCustomer);
     }

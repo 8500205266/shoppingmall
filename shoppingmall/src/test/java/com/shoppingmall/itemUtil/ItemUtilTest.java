@@ -1,5 +1,7 @@
 package com.shoppingmall.itemUtil;
+import com.shoppingmall.model.Items;
 import com.shoppingmall.model.ItemsResponse;
+import com.shoppingmall.model.Offers;
 import com.shoppingmall.utils.ItemUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 @RunWith(SpringRunner.class)
@@ -79,5 +82,25 @@ public class ItemUtilTest
         logger.info("finalDollerOffListMethod-->{}",finalDollerOffListMethod);
         Assert.assertNotNull(finalDollerOffListMethod);
     }
+
+    @Test
+    public void freeOfferItemOfferTypeTest()
+    {
+        Optional<Items> items= Optional.of(new Items(1, 2, 3));
+        Offers offers=new Offers(1,"free-offer",3);
+        final ItemsResponse itemsResponse = itemUtilInjectMock.freeOfferMethod(items, Optional.of(offers));
+        Assert.assertNotNull(itemsResponse);
+
+    }
+    @Test
+    public void dollerOffitemOfferTypeTest()
+    {
+        Optional<Items> items= Optional.of(new Items(1, 2, 3));
+        Offers offers=new Offers(1,"doller-off",3);
+        final ItemsResponse itemsResponse = itemUtilInjectMock.dollerOffMethod(items, Optional.of(offers));
+        Assert.assertNotNull(itemsResponse);
+
+    }
+
 
 }
